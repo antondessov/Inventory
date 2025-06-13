@@ -24,7 +24,6 @@ void UInv_InventoryGrid::NativeOnInitialized()
 
 void UInv_InventoryGrid::AddItem(UInv_InventoryItem* Item)
 {
-	if (!IsValid(Item)) return;
 	if  (!MatchesCategory(Item)) return;
 
 	UE_LOG(LogTemp, Warning, TEXT("Inv_InventoryGrid::AddItem"));
