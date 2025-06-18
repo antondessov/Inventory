@@ -21,10 +21,13 @@ struct INVENTORY_API FInv_ItemManifest
 	UInv_InventoryItem* Manifest(UObject* NewOuter);
 	
 	EInv_ItemCategory GetItemCategory() const {return ItemCategory;}
-	FGameplayTag GetItemTag() const {return ItemType;}
+	FGameplayTag GetItemType() const {return ItemType;}
 
 	template<typename T> requires std::derived_from<T, FInv_ItemFragment>
 	const T* GetFragmentOfTypeWithTag(const FGameplayTag FragmentTag) const;
+
+	template<typename T> requires std::derived_from<T, FInv_ItemFragment>
+	const T* GetFragmentOfType() const;
 	
 private:
 
@@ -48,6 +51,20 @@ const T* FInv_ItemManifest::GetFragmentOfTypeWithTag(const FGameplayTag Fragment
 		if (const T* FragmentPtr = Fragment.GetPtr<T>())
 		{
 			if (!FragmentPtr->GetFragmentTag().MatchesTag(FragmentTag)) continue;
+			return FragmentPtr;
+		}
+	}
+	
+	return nullptr;
+}
+
+template <typename T> requires std::derived_from<T, FInv_ItemFragment>
+const T* FInv_ItemManifest::GetFragmentOfType() const
+{
+	for (const TInstancedStruct<FInv_ItemFragment>& Fragment : Fragments)
+	{
+		if (const T* FragmentPtr = Fragment.GetPtr<T>())
+		{
 			return FragmentPtr;
 		}
 	}
