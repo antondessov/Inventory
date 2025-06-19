@@ -17,10 +17,13 @@ public:
 	UInv_ItemComponent();
 	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 	FString GetPickupMessage() const {return PickupMessage;}
-
+	void PickedUp();
 	FInv_ItemManifest GetItemManifest() const {return ItemManifest;}
-protected:
 	
+protected:
+
+	UFUNCTION(BlueprintImplementableEvent, Category= "Inventory")
+	void OnPickedUp();
 
 private:
 
