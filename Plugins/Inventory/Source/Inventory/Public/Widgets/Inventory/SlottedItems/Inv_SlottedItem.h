@@ -6,6 +6,8 @@
 #include "Blueprint/UserWidget.h"
 #include "Inv_SlottedItem.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FSlottedItemClicked, int32, GridIndex, const FPointerEvent&, MouseEvent);
+
 class UInv_InventoryItem;
 class UImage;
 class UTextBlock;
@@ -19,6 +21,9 @@ class INVENTORY_API UInv_SlottedItem : public UUserWidget
 
 public:
 
+	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
+	FSlottedItemClicked OnSlottedItemClicked;
+	
 	bool IsStackable() const { return bIsStackable; }
 	void SetIsStackable(bool bStackable) {bIsStackable = bStackable;}
 	UImage* GetImageIcon() const {return Image_Icon;}

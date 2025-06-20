@@ -18,4 +18,7 @@ class INVENTORY_API UInv_WidgetUtils : public UBlueprintFunctionLibrary
 
 	static int32 GetIndexFromPosition(const FIntPoint& Position, const int32 Columns);
 	static FIntPoint GetPositionFromIndex(const int32 Index, const int32 Columns);
+
+	UFUNCTION(BlueprintCallable, Category = "Inventory")
+	static FVector2D GetWidgetPosition(UWidget* Widget);
 };
