@@ -26,5 +26,5 @@ class INVENTORY_API UInv_WidgetUtils : public UBlueprintFunctionLibrary
 	static FVector2D GetWidgetPosition(UWidget* Widget);
 
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
-	static FVector2D GetWidgeSize(UWidget* Widget);
+	static FVector2D GetWidgetSize(UWidget* Widget);
 };
