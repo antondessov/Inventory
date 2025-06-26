@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "Inv_GridSlot.generated.h"
 
+class UInv_ItemPopUp;
 class UInv_InventoryItem;
 class UImage;
 
@@ -51,7 +52,9 @@ public:
 	int32 GetUpperLeftIndex() const { return UpperLeftIndex; }
 	void SetUpperLeftIndex(int32 Index) { UpperLeftIndex = Index; }
 	bool IsAvailable() const { return bAvailable; }
-	void SetAvailable(bool bIsAvailable) { bAvailable = bIsAvailable; }
+	void SetAvailable(bool bIsAvailable) { bAvailable = bIsAvailable;}
+	void SetItemPopUp(UInv_ItemPopUp* ItemPopup);
+	UInv_ItemPopUp* GetItemPopUp() const;
 
 	FGridSlotEvent GridSlotClicked;
 	FGridSlotEvent GridSlotHovered;
@@ -61,13 +64,13 @@ private:
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UImage> Image_GridSlot;
-
-	int32 TileIndex{INDEX_NONE};
 	int32 StackCount{0};
+	int32 TileIndex{INDEX_NONE};
 	int32 UpperLeftIndex{INDEX_NONE};
 	bool bAvailable{true};
 
 	TWeakObjectPtr<UInv_InventoryItem> InventoryItem;
+	TWeakObjectPtr<UInv_ItemPopUp> ItemPopUp;
 	
 	UPROPERTY(EditAnywhere, Category = "Inventory")
 	FSlateBrush Brush_Unoccupied;
@@ -82,6 +85,9 @@ private:
 	FSlateBrush Brush_GrayedOut;
 
 	EInv_GridSlotState GridSlotState;
+
+	UFUNCTION()
+	void OnItemPopUpDestruct(UUserWidget* Menu);
 
 
 };

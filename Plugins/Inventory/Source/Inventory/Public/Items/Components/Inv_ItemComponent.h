@@ -19,7 +19,8 @@ public:
 	FString GetPickupMessage() const {return PickupMessage;}
 	void PickedUp();
 	FInv_ItemManifest GetItemManifest() const {return ItemManifest;}
-	
+
+	void InitItemManifest(FInv_ItemManifest CopyOfManifest);
 protected:
 
 	UFUNCTION(BlueprintImplementableEvent, Category= "Inventory")
