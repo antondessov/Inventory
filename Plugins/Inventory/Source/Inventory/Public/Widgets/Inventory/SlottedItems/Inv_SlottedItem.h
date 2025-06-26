@@ -22,7 +22,9 @@ class INVENTORY_API UInv_SlottedItem : public UUserWidget
 public:
 
 	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
-	FSlottedItemClicked OnSlottedItemClicked;
+	virtual void NativeOnMouseEnter(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
+	virtual void NativeOnMouseLeave(const FPointerEvent& InMouseEvent) override;
+	
 	
 	bool IsStackable() const { return bIsStackable; }
 	void SetIsStackable(bool bStackable) {bIsStackable = bStackable;}
@@ -35,6 +37,7 @@ public:
 	UInv_InventoryItem* GetInventoryItem() const {return InventoryItem.Get();}
 	void SetImageBrush(const FSlateBrush& Brush) const;
 	void UpdateStackCount(int32 StackCount);
+	FSlottedItemClicked OnSlottedItemClicked;
 	
 private:
 

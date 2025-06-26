@@ -37,3 +37,31 @@ FVector2D UInv_WidgetUtils::GetWidgetSize(UWidget* Widget)
 	const FGeometry Geometry = Widget->GetCachedGeometry();
 	return Geometry.GetLocalSize();
 }
+
+FVector2D UInv_WidgetUtils::GetClampedWidgetPosition(const FVector2D& Boundary, const FVector2D& WidgetSize,
+	const FVector2D& MousePos)
+{
+	FVector2D ClampedPosition = MousePos;
+
+	// Adjust horizontal position to ensure the widget stays within the boundary
+	if (MousePos.X + WidgetSize.X > Boundary.X) // Widget exceeds the right edge
+	{
+		ClampedPosition.X = Boundary.X - WidgetSize.X;
+	}
+	if (MousePos.X < 0.f) //Widget exceed the left edge
+	{
+		ClampedPosition.X = 0.f;
+	}
+
+	// Adjust vertical position to ensure the widget stays within the boundary
+	if (MousePos.Y + WidgetSize.Y > Boundary.Y)
+	{
+		ClampedPosition.Y = Boundary.Y - WidgetSize.Y;
+	}
+	if (MousePos.Y < 0.f)
+	{
+		ClampedPosition.Y = 0.f;
+	}
+	
+	return ClampedPosition;
+}

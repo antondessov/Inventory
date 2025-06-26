@@ -6,6 +6,7 @@
 #include "Widgets/Inventory/InventoryBase/Inv_InventoryBase.h"
 #include "Inv_SpatialInventory.generated.h"
 
+class UInv_ItemDescription;
 class UCanvasPanel;
 class UButton;
 class UWidgetSwitcher;
@@ -23,6 +24,13 @@ public:
 	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 
 	virtual FInv_SlotAvailabilityResult HasRoomForItem(UInv_ItemComponent* ItemComponent) const override;
+
+	virtual void OnItemHovered(UInv_InventoryItem* Item) override;
+	virtual void OnItemUnhovered() override;
+	virtual bool IsHovered() const override;
+
+	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
+	
 private:
 
 	UPROPERTY(meta = (BindWidget))
@@ -61,4 +69,21 @@ private:
 
 	void SetActiveGrid(UInv_InventoryGrid* Grid, UButton* Button);
 	TWeakObjectPtr<UInv_InventoryGrid> ActiveGrid;
+
+	void SetItemDescriptionSizeAndPosition(UInv_ItemDescription* Description, UCanvasPanel* Canvas) const;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UInv_ItemDescription> ItemDescriptionClass;
+
+	UPROPERTY()
+	TObjectPtr<UInv_ItemDescription> ItemDescription;
+
+	UInv_ItemDescription* GetItemDescription();
+
+	FTimerHandle DescriptionTimer;
+	
+	UPROPERTY(EditAnywhere)
+	float DescriptionTimerDelay = 0.5f;
+
+	
 };
