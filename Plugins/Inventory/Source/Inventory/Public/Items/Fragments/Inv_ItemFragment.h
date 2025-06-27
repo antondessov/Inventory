@@ -5,6 +5,7 @@
 
 #include "Inv_ItemFragment.generated.h"
 
+class UInv_CompositeBase;
 class APlayerController;
 
 USTRUCT(BlueprintType)
@@ -49,12 +50,28 @@ private:
 	
 };
 
+/*
+ * Irwm fragment specifically for assimilation into a widget
+ */
 USTRUCT(BlueprintType)
-struct FInv_ImageFragment : public FInv_ItemFragment
+struct FInv_InventoryItemFragment : public FInv_ItemFragment
+{
+	GENERATED_BODY()
+	
+	virtual void Assimilate(UInv_CompositeBase* Composite) const;
+protected:
+
+	bool MatchesWidgetTag(const UInv_CompositeBase* Composite) const;
+	
+};
+
+USTRUCT(BlueprintType)
+struct FInv_ImageFragment : public FInv_InventoryItemFragment
 {
 	GENERATED_BODY()
 
 	UTexture2D* GetIcon() const {return Icon;}
+	virtual void Assimilate(UInv_CompositeBase* Composite) const override;
 	
 private:
 
@@ -115,3 +132,4 @@ struct FInv_ManaPotionFragment : public FInv_ConsumableFragment
 	virtual void OnConsume(APlayerController* PC) override;
 	
 };
+
