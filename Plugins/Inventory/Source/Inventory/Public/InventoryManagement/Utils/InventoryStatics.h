@@ -11,6 +11,7 @@
 class UInv_WidgetUtils;
 class UInv_ItemComponent;
 class UInv_InventoryComponent;
+class UInv_HoverItem;
 /**
  * 
  */
@@ -36,6 +37,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
 	static void ItemUnhovered(APlayerController* PC);
+
+	UFUNCTION(BlueprintCallable, Category = "Inventory")
+	static UInv_HoverItem* GetHoverItem(APlayerController* PC);
 };
 
 template<typename T, typename FuncT>

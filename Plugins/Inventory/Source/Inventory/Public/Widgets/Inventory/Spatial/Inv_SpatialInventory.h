@@ -3,9 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameplayTagContainer.h"
 #include "Widgets/Inventory/InventoryBase/Inv_InventoryBase.h"
 #include "Inv_SpatialInventory.generated.h"
 
+class UInv_EquippedGridSlot;
 class UInv_ItemDescription;
 class UCanvasPanel;
 class UButton;
@@ -30,9 +32,13 @@ public:
 	virtual bool IsHovered() const override;
 
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
+	virtual UInv_HoverItem* GetHoverItem() const override;
+	
 	
 private:
 
+	TArray<TObjectPtr<UInv_EquippedGridSlot>> EquippedGridSlots;
+	
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UCanvasPanel> CanvasPanel;
 	
@@ -67,6 +73,9 @@ private:
 	void ShowCraftables();
 	void DisableButton(UButton* Button);
 
+	UFUNCTION()
+	void EquippedGridSlotClicked(UInv_EquippedGridSlot* EquippedGridSlot, const FGameplayTag& EquipmentTypeTag);
+
 	void SetActiveGrid(UInv_InventoryGrid* Grid, UButton* Button);
 	TWeakObjectPtr<UInv_InventoryGrid> ActiveGrid;
 
@@ -79,6 +88,7 @@ private:
 	TObjectPtr<UInv_ItemDescription> ItemDescription;
 
 	UInv_ItemDescription* GetItemDescription();
+	bool CanEquipHoverItem(UInv_EquippedGridSlot* EquippedGridSlot, const FGameplayTag& EquipmentTypeTag) const;
 
 	FTimerHandle DescriptionTimer;
 	

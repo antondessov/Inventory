@@ -1,20 +1,73 @@
 ﻿
 #include "Items/Fragments/Inv_ItemFragment.h"
 
+#include "PropertyPathHelpers.h"
 #include "Widgets/Composite/Inv_CompositeBase.h"
 #include "Widgets/Composite/Inv_Leaf_Image.h"
 #include "Widgets/Composite/Inv_Leaf_LabeledValue.h"
 #include "Widgets/Composite/Inv_Leaf_Text.h"
 
+
 void FInv_HealthPotionFragment::OnConsume(APlayerController* PC)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, "Healing!");
+	GEngine->AddOnScreenDebugMessage(-1, 5.f,
+		FColor::Green,
+		FString::Printf(TEXT("Health Potion consumed! Healing by: %f:"),
+			GetValue()));
 	
 }
 
 void FInv_ManaPotionFragment::OnConsume(APlayerController* PC)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Cyan, "Mana potion consumed!");
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, FString::Printf(TEXT("Mana Potion consumed! Maning by: %f:"), GetValue()));
+}
+
+void FInv_StrengthModifier::OnEquip(APlayerController* PC)
+{
+	GEngine->AddOnScreenDebugMessage(-1, 5.f,
+	FColor::Green,
+	FString::Printf(TEXT("Strength increased by: %f:"),
+		GetValue()));
+}
+
+void FInv_StrengthModifier::OnUnEquip(APlayerController* PC)
+{
+	GEngine->AddOnScreenDebugMessage(-1, 5.f,
+	FColor::Red,
+	FString::Printf(TEXT("Strength decreased by: %f:"),
+		GetValue()));
+}
+
+void FInv_EquipmentFragment::OnEquip(APlayerController* PC)
+{
+	if (bEquipped) return;
+	bEquipped = true;
+	for (auto& Modifier : EquipModifiers)
+	{
+		auto& ModRef = Modifier.GetMutable<>();
+		ModRef.OnEquip(PC);
+	}
+}
+
+void FInv_EquipmentFragment::OnUnEquip(APlayerController* PC)
+{
+	if (!bEquipped) return;
+	bEquipped = false;
+	for (auto& Modifier : EquipModifiers)
+	{
+		auto& ModRef = Modifier.GetMutable<>();
+		ModRef.OnUnEquip(PC);
+	}
+}
+
+void FInv_EquipmentFragment::Assimilate(UInv_CompositeBase* Composite) const
+{
+	FInv_InventoryItemFragment::Assimilate(Composite);
+	for (auto& Modifier : EquipModifiers)
+	{
+		const auto& ModRef = Modifier.Get();
+		ModRef.Assimilate(Composite);
+	}
 }
 
 void FInv_InventoryItemFragment::Assimilate(UInv_CompositeBase* Composite) const
@@ -57,6 +110,36 @@ void FInv_LabeledNumberFragment::Manifest()
 	}
 	bRandomizedOnManifest = false;
 }
+
+void FInv_ConsumableFragment::OnConsume(APlayerController* PC)
+{
+	for (auto& Modifier : ConsumeModifiers)
+	{
+		auto& ModRef = Modifier.GetMutable<>();
+		ModRef.OnConsume(PC);
+	}
+}
+
+void FInv_ConsumableFragment::Assimilate(UInv_CompositeBase* Composite) const
+{
+	FInv_InventoryItemFragment::Assimilate(Composite);
+	for (const auto& Modifier : ConsumeModifiers)
+	{
+		const auto& ModRef = Modifier.Get();
+		ModRef.Assimilate(Composite);
+	}
+}
+
+void FInv_ConsumableFragment::Manifest()
+{
+	FInv_InventoryItemFragment::Manifest();
+	for (auto& Modifier : ConsumeModifiers)
+	{
+		auto& ModRef = Modifier.GetMutable<>();
+		ModRef.Manifest();
+	}
+}
+
 
 void FInv_LabeledNumberFragment::Assimilate(UInv_CompositeBase* Composite) const
 {

@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "GameplayTagContainer.h"
+#include "StructUtils/InstancedStruct.h"
 
 #include "Inv_ItemFragment.generated.h"
 
@@ -107,6 +108,7 @@ struct FInv_LabeledNumberFragment : public FInv_InventoryItemFragment
 
 	virtual void Manifest() override;
 	virtual void Assimilate(UInv_CompositeBase* Composite) const override;
+	float GetValue() const {return Value;}
 	// When manifesting for the first time, this fragment will randomize. However, once equipped
 	// and dropped, an item should retain the same value, so randomization won't happen
 	bool bRandomizedOnManifest{true};
@@ -156,36 +158,91 @@ private:
 	int32 StackCount{1};
 };
 
+
+// Consume Fragments
+
+
 USTRUCT(BlueprintType)
-struct FInv_ConsumableFragment : public FInv_ItemFragment
+struct FInv_ConsumeModifier : public FInv_LabeledNumberFragment
 {
 	GENERATED_BODY()
-	
+
 	virtual void OnConsume(APlayerController* PC) {}
+};
+
+USTRUCT(BlueprintType)
+struct FInv_ConsumableFragment : public FInv_InventoryItemFragment
+{
+	GENERATED_BODY()
+	
+	virtual void OnConsume(APlayerController* PC);
+	virtual void Assimilate(UInv_CompositeBase* Composite) const override;
+	virtual void Manifest() override;
+
+private:
+
+	UPROPERTY(EditAnywhere, Category = "Inventory", meta = (ExcludeBaseStruct))
+	TArray<TInstancedStruct<FInv_ConsumeModifier>> ConsumeModifiers;
 	
 };
 
 USTRUCT(BlueprintType)
-struct FInv_HealthPotionFragment : public FInv_ConsumableFragment
+struct FInv_HealthPotionFragment : public FInv_ConsumeModifier
 {
 	GENERATED_BODY()
-
-	UPROPERTY(EditAnywhere, Category = "Inventory")
-	float HealAmount = 20.f;
 	
 	virtual void OnConsume(APlayerController* PC) override;
 	
 };
 
 USTRUCT(BlueprintType)
-struct FInv_ManaPotionFragment : public FInv_ConsumableFragment
+struct FInv_ManaPotionFragment : public FInv_ConsumeModifier
 {
 	GENERATED_BODY()
-
-	UPROPERTY(EditAnywhere, Category = "Inventory")
-	float ManaAmount = 20.f;
 	
 	virtual void OnConsume(APlayerController* PC) override;
 	
 };
 
+// Equipment
+//
+
+
+USTRUCT(BlueprintType)
+struct FInv_EquipModifier : public FInv_LabeledNumberFragment
+{
+	GENERATED_BODY()
+
+	virtual void OnEquip(APlayerController* PC) {};
+	virtual void OnUnEquip(APlayerController* PC) {};
+	
+};
+
+USTRUCT(BlueprintType)
+struct FInv_StrengthModifier : public FInv_EquipModifier
+{
+	GENERATED_BODY()
+
+	virtual void OnEquip(APlayerController* PC) override;
+	virtual void OnUnEquip(APlayerController* PC) override;
+	
+};
+
+
+USTRUCT(BlueprintType)
+struct FInv_EquipmentFragment : public FInv_InventoryItemFragment
+{
+	GENERATED_BODY()
+public:
+
+	bool bEquipped{false};
+	void OnEquip(APlayerController* PC);
+	void OnUnEquip(APlayerController* PC);
+	virtual void Assimilate(UInv_CompositeBase* Composite) const override;
+	
+private:
+
+	UPROPERTY(EditAnywhere, Category = "Inventory")
+	TArray<TInstancedStruct<FInv_EquipModifier>> EquipModifiers;
+	
+};

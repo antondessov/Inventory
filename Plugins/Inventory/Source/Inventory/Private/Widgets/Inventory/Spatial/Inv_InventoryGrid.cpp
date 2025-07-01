@@ -983,6 +983,11 @@ bool UInv_InventoryGrid::HasHoverItem() const
 	return IsValid(HoverItem);
 }
 
+UInv_HoverItem* UInv_InventoryGrid::GetHoverItem() const
+{
+	return HoverItem;
+}
+
 
 bool UInv_InventoryGrid::MatchesCategory(const UInv_InventoryItem* Item) const
 {

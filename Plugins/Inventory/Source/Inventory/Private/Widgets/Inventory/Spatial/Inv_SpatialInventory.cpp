@@ -13,6 +13,9 @@
 #include "Items/Inv_InventoryItem.h"
 #include "Widgets/Inventory/Spatial/Inv_InventoryGrid.h"
 #include "Widgets/ItemDescription/Inv_ItemDescription.h"
+#include "Blueprint/WidgetTree.h"
+#include "Widgets/Inventory/GridSlots/Inv_EquippedGridSlot.h"
+#include "Widgets/Inventory/HoverItem/Inv_HoverItem.h"
 
 void UInv_SpatialInventory::NativeOnInitialized()
 {
@@ -28,6 +31,44 @@ void UInv_SpatialInventory::NativeOnInitialized()
 	
 
 	ShowEquippables();
+
+	WidgetTree->ForEachWidget([this](UWidget* Widget)
+	{
+		UInv_EquippedGridSlot* EquippedGridSlot = Cast<UInv_EquippedGridSlot>(Widget);
+		if (IsValid(EquippedGridSlot))
+		{
+			EquippedGridSlots.Add(EquippedGridSlot);
+			EquippedGridSlot->EquippedGridSlotClicked.AddDynamic(this, &ThisClass::EquippedGridSlotClicked);
+		}
+	});
+}
+
+void UInv_SpatialInventory::EquippedGridSlotClicked(UInv_EquippedGridSlot* EquippedGridSlot,
+	const FGameplayTag& EquipmentTypeTag)
+{
+	// Check to see if we can equip the Hover Item
+	if (!CanEquipHoverItem(EquippedGridSlot, EquipmentTypeTag)) return;
+	// Create an Equipped Slotted Item and add it to the Equipped Grid Slot (call EquippedGridSlot->OnItemEquipped())
+	
+	
+	// Clear the Hover Item
+	// Inform the server that we've equipped an item (potentially unequipping an item as well)
+	
+}
+
+bool UInv_SpatialInventory::CanEquipHoverItem(UInv_EquippedGridSlot* EquippedGridSlot,
+	const FGameplayTag& EquipmentTypeTag) const
+{
+	if (!IsValid(EquippedGridSlot) || EquippedGridSlot->GetInventoryItem().IsValid()) return false;
+
+	UInv_HoverItem* HoverItem = GetHoverItem();
+	if (!IsValid(HoverItem)) return false;
+
+	UInv_InventoryItem* HeldItem = HoverItem->GetInventoryItem();
+	return HasHoverItem() && IsValid(HeldItem) &&
+		!HoverItem->IsStackable() &&
+			HeldItem->GetItemManifest().GetItemCategory() == EInv_ItemCategory::Equippable &&
+				HeldItem->GetItemManifest().GetItemType().MatchesTag(EquipmentTypeTag);
 }
 
 FReply UInv_SpatialInventory::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
@@ -96,8 +137,15 @@ void UInv_SpatialInventory::NativeTick(const FGeometry& MyGeometry, float InDelt
 	
 }
 
+UInv_HoverItem* UInv_SpatialInventory::GetHoverItem() const
+{
+	if (!ActiveGrid.IsValid()) return nullptr;
+
+	return ActiveGrid->GetHoverItem();
+}
+
 void UInv_SpatialInventory::SetItemDescriptionSizeAndPosition(UInv_ItemDescription* Description,
-	UCanvasPanel* Canvas) const
+                                                              UCanvasPanel* Canvas) const
 {
 	UCanvasPanelSlot* ItemDescriptionCPS = UWidgetLayoutLibrary::SlotAsCanvasSlot(Description);
 	if (!IsValid(ItemDescriptionCPS)) return;
@@ -136,6 +184,8 @@ void UInv_SpatialInventory::DisableButton(UButton* Button)
 	Button->SetIsEnabled(false);
 }
 
+
+
 void UInv_SpatialInventory::SetActiveGrid(UInv_InventoryGrid* Grid, UButton* Button)
 {
 	if (ActiveGrid.IsValid()) ActiveGrid->HideCursor();
@@ -156,3 +206,5 @@ UInv_ItemDescription* UInv_SpatialInventory::GetItemDescription()
 	}
 	return ItemDescription;
 }
+
+
