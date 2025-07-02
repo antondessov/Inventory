@@ -16,6 +16,7 @@ namespace GameItems
 		namespace Cloaks
 		{
 			UE_DEFINE_GAMEPLAY_TAG(RedCloak, "GameItems.Equipment.Cloaks.RedCloak")
+			UE_DEFINE_GAMEPLAY_TAG(BlueCloak, "GameItems.Equipment.Cloaks.BlueCloak")
 		}
 
 		namespace Masks
