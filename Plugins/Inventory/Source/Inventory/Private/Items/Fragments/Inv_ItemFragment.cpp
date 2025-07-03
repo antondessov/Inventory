@@ -70,6 +70,16 @@ void FInv_EquipmentFragment::Assimilate(UInv_CompositeBase* Composite) const
 	}
 }
 
+void FInv_EquipmentFragment::Manifest()
+{
+	FInv_InventoryItemFragment::Manifest();
+	for (auto& Modifier : EquipModifiers)
+	{
+		auto& ModRef = Modifier.GetMutable();
+		ModRef.Manifest();
+	}
+}
+
 void FInv_InventoryItemFragment::Assimilate(UInv_CompositeBase* Composite) const
 {
 	if (!MatchesWidgetTag(Composite)) return;
