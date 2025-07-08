@@ -10,6 +10,16 @@
 #include "InventoryManagement/Utils/InventoryStatics.h"
 #include "Items/Inv_InventoryItem.h"
 
+void UInv_EquipmentComponent::SetOwningSkeletalMesh(USkeletalMeshComponent* InOwningSkeletalMesh)
+{
+	OwningSkeletalMesh = InOwningSkeletalMesh;
+}
+
+void UInv_EquipmentComponent::SetIsProxy(bool bProxy)
+{
+	bIsProxy = bProxy;
+}
+
 void UInv_EquipmentComponent::BeginPlay()
 {
 	Super::BeginPlay();

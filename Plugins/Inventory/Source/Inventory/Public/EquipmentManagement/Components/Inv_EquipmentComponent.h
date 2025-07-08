@@ -22,6 +22,9 @@ class INVENTORY_API UInv_EquipmentComponent : public UActorComponent
 
 public:
 
+	void SetOwningSkeletalMesh(USkeletalMeshComponent* InOwningSkeletalMesh);
+	void SetIsProxy(bool bProxy);
+	
 protected:
 	virtual void BeginPlay() override;
 
@@ -50,4 +53,6 @@ private:
 	
 	UPROPERTY()
 	TArray<TObjectPtr<AInv_EquipActor>> EquippedActors;
+
+	bool bIsProxy{false};
 };
